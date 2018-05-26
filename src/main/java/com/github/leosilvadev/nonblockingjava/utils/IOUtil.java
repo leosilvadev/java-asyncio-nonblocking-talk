@@ -8,6 +8,9 @@ import java.net.Socket;
  */
 public class IOUtil {
 
+  public static final String BEGIN_MSG = "<BEGIN>";
+  public static final String END_MSG = "<END>";
+
   public static void sleepFor(final Long time) {
     try {
       Thread.sleep(time);

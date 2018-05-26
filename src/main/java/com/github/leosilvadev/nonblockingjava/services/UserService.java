@@ -15,11 +15,11 @@ import java.util.stream.LongStream;
  */
 public class UserService {
 
-  private static final ExecutorService executor;
-  private static final List<User> users;
+  private final ExecutorService executor;
+  private final List<User> users;
 
-  static {
-    executor = Executors.newCachedThreadPool();
+  public UserService(final Integer threads) {
+    executor = Executors.newFixedThreadPool(threads);
     users = LongStream.range(1, 101)
         .mapToObj(n -> new User(n + "user@gmail.com", n + "secret"))
         .collect(Collectors.toList());
@@ -27,7 +27,7 @@ public class UserService {
 
   public void getUsers(final Consumer<List<User>> callback) {
     executor.execute(() -> {
-      IOUtil.sleepFor(100L);
+      IOUtil.sleepFor(300L);
       callback.accept(users);
     });
   }

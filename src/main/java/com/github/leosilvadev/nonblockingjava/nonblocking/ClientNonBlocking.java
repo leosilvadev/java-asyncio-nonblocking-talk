@@ -1,4 +1,4 @@
-package com.github.leosilvadev.nonblockingjava.sockets;
+package com.github.leosilvadev.nonblockingjava.nonblocking;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
