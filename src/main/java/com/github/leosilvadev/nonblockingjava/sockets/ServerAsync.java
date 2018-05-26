@@ -21,7 +21,7 @@ public class ServerBlocking {
       log("New connection!");
       executorService.execute(() -> {
         try {
-          Thread.sleep(60000);
+          Thread.sleep(100);
           final String message = defaultMessage + "\n";
           socket.getOutputStream().write(message.getBytes());
           socket.getOutputStream().write("<DONE>\n".getBytes());
