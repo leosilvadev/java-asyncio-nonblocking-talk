@@ -1,5 +1,9 @@
 package com.github.leosilvadev.nonblockingjava.sockets;
 
+import com.github.leosilvadev.nonblockingjava.services.UserService;
+import com.github.leosilvadev.nonblockingjava.utils.IOUtil;
+import com.github.leosilvadev.nonblockingjava.utils.Json;
+
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -9,27 +13,23 @@ import java.util.concurrent.Executors;
 /**
  * Created by leonardo on 4/19/18.
  */
-public class ServerBlocking {
+public class ServerAsync {
 
   public static void main(final String[] args) throws IOException {
     final ServerSocket server = new ServerSocket(3322);
-    final ExecutorService executorService = Executors.newFixedThreadPool(100);
-    final String defaultMessage = "THIS IS A DEFAULT MESSAGE!";
+    final ExecutorService executorService = Executors.newFixedThreadPool(50);
+
+    final UserService userService = new UserService();
 
     while (true) {
       final Socket socket = server.accept();
       log("New connection!");
       executorService.execute(() -> {
-        try {
-          Thread.sleep(100);
-          final String message = defaultMessage + "\n";
-          socket.getOutputStream().write(message.getBytes());
-          socket.getOutputStream().write("<DONE>\n".getBytes());
-          log(message);
-        } catch (final Exception ex) {
-          ex.printStackTrace();
-          throw new RuntimeException(ex);
-        }
+        IOUtil.write(socket, "<BEGIN>");
+        userService.getUsers(users -> {
+          IOUtil.write(socket, Json.toJson(users));
+          IOUtil.write(socket, "<END>");
+        });
       });
     }
 

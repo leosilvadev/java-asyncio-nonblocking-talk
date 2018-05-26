@@ -14,11 +14,11 @@ import java.util.concurrent.TimeUnit;
 public class ClientAsync {
 
   public static void main(final String[] args) throws Exception {
-    final Integer clients = 100;
-    final ExecutorService executorService = Executors.newFixedThreadPool(10);
+    final Integer clients = 1000;
+    final ExecutorService executorService = Executors.newFixedThreadPool(50);
     final CountDownLatch counter = new CountDownLatch(clients);
 
-    for (Long client = 0L ; client < clients ; client++) {
+    for (Long client = 0L; client < clients; client++) {
       readAsyncFrom("localhost", 3322, executorService, counter::countDown);
     }
 
@@ -37,7 +37,8 @@ public class ClientAsync {
 
         String line;
         while ((line = reader.readLine()) != null) {
-          if (line.equals("<DONE>")) break;
+          if (line.equals("<BEGIN>")) continue;
+          if (line.equals("<END>")) break;
           builder.append(line);
         }
 

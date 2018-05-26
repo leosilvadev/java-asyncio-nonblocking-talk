@@ -2,7 +2,6 @@ package com.github.leosilvadev.nonblockingjava.sockets;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.net.Socket;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
@@ -19,7 +18,7 @@ import java.util.concurrent.TimeoutException;
  */
 public class ClientNonBlocking {
 
-  public static void main(final String[] args) throws IOException, InterruptedException, TimeoutException, ExecutionException {
+  public static void main(final String[] args) throws Exception {
     final Integer clients = 100;
     final Selector selector = Selector.open();
     final CountDownLatch counter = new CountDownLatch(clients);
@@ -36,7 +35,7 @@ public class ClientNonBlocking {
     final long beginningOfExecution = System.currentTimeMillis();
     final SocketChannel channel = SocketChannel.open();
     channel.configureBlocking(false);
-    channel.register(selector, SelectionKey.OP_CONNECT | SelectionKey.OP_READ).attach(beginningOfExecution);
+    channel.register(selector, SelectionKey.OP_CONNECT & SelectionKey.OP_READ).attach(beginningOfExecution);
     channel.connect(address);
   }
 
@@ -77,7 +76,7 @@ public class ClientNonBlocking {
       } else {
         final long endOfExecution = System.currentTimeMillis();
         final long executionTime = endOfExecution - beginningOfExecution;
-        log("(" + executionTime + " ms)" + message);
+        log("(" + executionTime + " ms) " + message);
       }
     }
 
