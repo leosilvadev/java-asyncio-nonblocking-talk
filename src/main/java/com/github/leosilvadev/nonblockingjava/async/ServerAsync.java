@@ -1,6 +1,6 @@
 package com.github.leosilvadev.nonblockingjava.async;
 
-import com.github.leosilvadev.nonblockingjava.services.UserService;
+import com.github.leosilvadev.nonblockingjava.async.services.UserServiceAsync;
 import com.github.leosilvadev.nonblockingjava.utils.IOUtil;
 import com.github.leosilvadev.nonblockingjava.utils.Json;
 
@@ -16,11 +16,11 @@ import java.util.concurrent.Executors;
 public class ServerAsync {
 
   private final Integer threads;
-  private final UserService userService;
+  private final UserServiceAsync userService;
 
   public ServerAsync(final Integer threads) {
     this.threads = threads;
-    this.userService = new UserService(threads);
+    this.userService = new UserServiceAsync(threads);
   }
 
   public void start(final Integer port) throws IOException {

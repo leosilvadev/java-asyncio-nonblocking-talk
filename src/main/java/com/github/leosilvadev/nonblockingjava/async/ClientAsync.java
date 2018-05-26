@@ -73,7 +73,7 @@ public class ClientAsync {
   }
 
   public static void main(final String[] args) throws InterruptedException {
-    final Integer clients = 100;
+    final Integer clients = 50;
     final ExecutorService executorService = Executors.newFixedThreadPool(clients);
     final CountDownLatch counter = new CountDownLatch(clients);
 

@@ -1,14 +1,15 @@
 package com.github.leosilvadev.nonblockingjava.nonblocking;
 
-import java.io.File;
+import com.github.leosilvadev.nonblockingjava.nonblocking.services.UserServiceNonBlocking;
+import com.github.leosilvadev.nonblockingjava.utils.IOUtil;
+import com.github.leosilvadev.nonblockingjava.utils.Json;
+
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
-import java.nio.charset.Charset;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -17,28 +18,36 @@ import java.util.Set;
  */
 public class ServerNonBlocking {
 
-  public static void main(String[] args) throws IOException {
-    final String defaultMessage = "THIS IS A DEFAULT MESSAGE!\n";
+  private final UserServiceNonBlocking userService;
+
+  public ServerNonBlocking() {
+    this.userService = new UserServiceNonBlocking();
+  }
+
+  public void start(final int port) throws IOException {
     final Selector selector = Selector.open();
     final ServerSocketChannel serverSocket = ServerSocketChannel.open();
-    serverSocket.bind(new InetSocketAddress("localhost", 3322));
+    serverSocket.bind(new InetSocketAddress(port));
     serverSocket.configureBlocking(false);
     serverSocket.register(selector, SelectionKey.OP_ACCEPT);
+    log("Server listening at port " + port);
 
     while (true) {
       selector.select();
+
       final Set<SelectionKey> selectedKeys = selector.selectedKeys();
       final Iterator<SelectionKey> keyIterator = selectedKeys.iterator();
       while (keyIterator.hasNext()) {
         final SelectionKey key = keyIterator.next();
         if (key.isAcceptable()) {
-          ServerSocketChannel serverSocketChannel = (ServerSocketChannel) key.channel();
-          SocketChannel client = serverSocketChannel.accept();
+          final ServerSocketChannel serverSocketChannel = (ServerSocketChannel) key.channel();
+          final SocketChannel client = serverSocketChannel.accept();
           client.configureBlocking(false);
           client.register(selector, SelectionKey.OP_WRITE);
 
         } else if (key.isWritable()) {
-          write(defaultMessage, key);
+          handleGetUsers(key);
+          key.cancel();
 
         }
         keyIterator.remove();
@@ -46,20 +55,24 @@ public class ServerNonBlocking {
     }
   }
 
-  private static void write(final String message, final SelectionKey key)
-      throws IOException {
-
-    final SocketChannel client = (SocketChannel) key.channel();
-    client.write(ByteBuffer.wrap(message.getBytes(Charset.forName("UTF-8"))));
-    client.write(ByteBuffer.wrap("<DONE>\n".getBytes(Charset.forName("UTF-8"))));
-    client.close();
+  private void handleGetUsers(final SelectionKey key) {
+    userService.getUsers(users -> write(Json.toJson(users), key));
   }
 
-  private static void registerToWrite(Selector selector, ServerSocketChannel serverSocket)
-      throws IOException {
+  private void write(final String message, final SelectionKey key) {
+    final SocketChannel client = (SocketChannel) key.channel();
+    IOUtil.write(client, IOUtil.BEGIN_MSG);
+    IOUtil.write(client, message);
+    IOUtil.write(client, IOUtil.END_MSG);
+    log("Writting users...");
+  }
 
-    SocketChannel client = serverSocket.accept();
-    client.configureBlocking(false);
-    client.register(selector, SelectionKey.OP_WRITE & SelectionKey.OP_READ);
+  public static void log(final String msg) {
+    System.out.println("[" + System.currentTimeMillis() + "] " + Thread.currentThread().getName() + " - " + msg);
+  }
+
+  public static void main(final String[] args) throws IOException {
+    final ServerNonBlocking server = new ServerNonBlocking();
+    server.start(8080);
   }
 }

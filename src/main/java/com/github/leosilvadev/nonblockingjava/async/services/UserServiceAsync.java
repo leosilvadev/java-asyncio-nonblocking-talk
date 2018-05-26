@@ -1,4 +1,4 @@
-package com.github.leosilvadev.nonblockingjava.services;
+package com.github.leosilvadev.nonblockingjava.async.services;
 
 import com.github.leosilvadev.nonblockingjava.domains.User;
 import com.github.leosilvadev.nonblockingjava.utils.IOUtil;
@@ -13,12 +13,12 @@ import java.util.stream.LongStream;
 /**
  * Created by leonardo on 5/26/18.
  */
-public class UserService {
+public class UserServiceAsync {
 
   private final ExecutorService executor;
   private final List<User> users;
 
-  public UserService(final Integer threads) {
+  public UserServiceAsync(final int threads) {
     executor = Executors.newFixedThreadPool(threads);
     users = LongStream.range(1, 101)
         .mapToObj(n -> new User(n + "user@gmail.com", n + "secret"))
