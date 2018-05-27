@@ -43,7 +43,7 @@ public class ServerNonBlocking {
           final ServerSocketChannel serverSocketChannel = (ServerSocketChannel) key.channel();
           final SocketChannel client = serverSocketChannel.accept();
           client.configureBlocking(false);
-          client.register(selector, SelectionKey.OP_WRITE);
+          client.register(selector, SelectionKey.OP_WRITE).attach(System.currentTimeMillis());
 
         } else if (key.isWritable()) {
           handleGetUsers(key);
@@ -56,7 +56,7 @@ public class ServerNonBlocking {
   }
 
   private void handleGetUsers(final SelectionKey key) {
-    userService.getUsers(users -> write(Json.toJson(users), key));
+    userService.getUsersJson(users -> write(users, key));
   }
 
   private void write(final String message, final SelectionKey key) {
@@ -64,7 +64,12 @@ public class ServerNonBlocking {
     IOUtil.write(client, IOUtil.BEGIN_MSG);
     IOUtil.write(client, message);
     IOUtil.write(client, IOUtil.END_MSG);
-    log("Writting users...");
+
+    final Long beganAt = (Long) key.attachment();
+    final Long finishedAt = System.currentTimeMillis();
+    final Long executionTime = finishedAt - beganAt;
+
+    log("Writting users... executed and sent in " + executionTime + " ms");
   }
 
   public static void log(final String msg) {
