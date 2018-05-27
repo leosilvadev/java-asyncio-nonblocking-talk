@@ -31,6 +31,8 @@ public class UserServiceNonBlocking {
     timer.schedule(() -> callback.accept(users), 300L);
   }
 
+  // Using the home-made non-blocking timer, that instead of using a thread pool and sleeping threads,
+  // it keeps a thread running and monitoring all the scheduled tasks
   public void getUsersJson(final Consumer<String> callback) {
     timer.schedule(() -> callback.accept(usersJson), 300L);
   }

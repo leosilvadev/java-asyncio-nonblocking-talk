@@ -23,6 +23,9 @@ public class NonBlockingTimer {
     tasks.add(new Task(callback, now + afterMs));
   }
 
+  // Only one thread keeps monitoring all the registered tasks
+  // and execute then when they are ready.
+  // !!!!! THIS IS A HOME-MADE AND SHITTY IMPLEMENTATION, ONLY FOR PRESENTATION PURPOSE, FOR THIS CASE IT FITS OKAY !!!!!!
   public void start() {
     executorService.execute(() -> {
       while (true) {

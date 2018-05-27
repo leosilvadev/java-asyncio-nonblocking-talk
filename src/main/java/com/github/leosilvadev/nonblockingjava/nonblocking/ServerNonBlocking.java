@@ -29,26 +29,42 @@ public class ServerNonBlocking {
   }
 
   public void start(final int port) throws IOException {
+
+    // Selector is only one instance, that will manage/monitor all the IO channels
     final Selector selector = Selector.open();
+
+    // Only one Server Socket channel. This channel will just wait for connections and accept then
+    // the socket connection itself is another channel
     final ServerSocketChannel serverSocket = ServerSocketChannel.open();
     serverSocket.bind(new InetSocketAddress(port));
+
+    // This is required, only non-blocking channels can be registered in a selector
     serverSocket.configureBlocking(false);
     serverSocket.register(selector, SelectionKey.OP_ACCEPT);
     logger.info("Server listening at port {}", port);
 
     while (true) {
+      // Select all the channels that are ready for some IO operation. It blocks until some is ready
       selector.select();
 
+      // Get all the channels (by keys, that represent the channels) that are ready for IO operation
       final Set<SelectionKey> selectedKeys = selector.selectedKeys();
       final Iterator<SelectionKey> keyIterator = selectedKeys.iterator();
       while (keyIterator.hasNext()) {
         final SelectionKey key = keyIterator.next();
+
+        // If the channel is acceptable (only Socket Server Channel was registered for ACCEPT operation)
+        // then we get the Socket Server Channel and accept the connection. This will return a Socket Channel (that represents the client connection)
+        // we then need to set this channel as non-blocking and register it to the selector for WRITE IO operation
+        // we also attache the current time in the key, so we can check how long it took to finish the operation after the connection become established
         if (key.isAcceptable()) {
           final ServerSocketChannel serverSocketChannel = (ServerSocketChannel) key.channel();
           final SocketChannel client = serverSocketChannel.accept();
           client.configureBlocking(false);
           client.register(selector, SelectionKey.OP_WRITE).attach(System.currentTimeMillis());
 
+          // If the channel is writable (only Socket Channel was registered for WRITE operation)
+          // then we get the users and write then through the socket
         } else if (key.isWritable()) {
           handleGetUsers(key);
           key.cancel();
@@ -73,7 +89,7 @@ public class ServerNonBlocking {
     final Long finishedAt = System.currentTimeMillis();
     final Long executionTime = finishedAt - beganAt;
 
-    logger.info("Writting users... executed and sent in {} ms", executionTime);
+    logger.info("Writing users... executed and sent in {} ms", executionTime);
   }
 
   public static void main(final String[] args) throws IOException {
