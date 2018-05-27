@@ -1,6 +1,8 @@
 package com.github.leosilvadev.nonblockingjava.nonblocking;
 
 import com.github.leosilvadev.nonblockingjava.utils.IOUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -13,12 +15,15 @@ import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
 /**
  * Created by leonardo on 4/19/18.
  */
 public class ClientNonBlocking {
+
+  private static final Logger logger = LoggerFactory.getLogger(ClientNonBlocking.class);
 
   private final InetSocketAddress address;
   private final Selector selector;
@@ -73,7 +78,7 @@ public class ClientNonBlocking {
   }
 
   private static PartialResponse readData(final SocketChannel channel, final PartialResponse partialResponse) throws IOException {
-    final ByteBuffer buffer = ByteBuffer.allocate(256);
+    final ByteBuffer buffer = ByteBuffer.allocate(4096);
     channel.read(buffer);
 
     final String[] messages = new String(buffer.array()).trim().split("\n");
@@ -81,7 +86,6 @@ public class ClientNonBlocking {
 
     for (String message : messages) {
       if (message.equals(IOUtil.BEGIN_MSG)) {
-        log("Connection established...");
       } else if (message.equals(IOUtil.END_MSG)) {
         return new PartialResponse(partialResponse.getContent(), true);
 
@@ -93,12 +97,8 @@ public class ClientNonBlocking {
     return new PartialResponse(partialResponse.getContent(), false);
   }
 
-  private static void log(final String msg) {
-    System.out.println("[" + System.currentTimeMillis() + "] " + Thread.currentThread().getName() + " - " + msg);
-  }
-
   public static void main(final String[] args) throws Exception {
-    final Integer clients = 50;
+    final Integer clients = 400;
     final Selector selector = Selector.open();
     final CountDownLatch counter = new CountDownLatch(clients);
 
@@ -106,10 +106,12 @@ public class ClientNonBlocking {
       new ClientNonBlocking(new InetSocketAddress(8080), selector).connect();
     }
 
+    final AtomicInteger id = new AtomicInteger(0);
+
     readNonBlocking(selector, counter, context -> {
       final long endOfExecution = System.currentTimeMillis();
       final long executionTime = endOfExecution - context.getBeganAt();
-      log("(" + executionTime + " ms) ");
+      logger.info("[{}] ({} ms) ", id.incrementAndGet(), executionTime);
 
     });
   }

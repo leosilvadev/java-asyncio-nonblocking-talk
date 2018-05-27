@@ -4,6 +4,8 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.github.leosilvadev.nonblockingjava.domains.User;
 import com.github.leosilvadev.nonblockingjava.dto.Response;
 import com.github.leosilvadev.nonblockingjava.utils.Json;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -15,6 +17,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.stream.IntStream;
 
@@ -22,6 +25,8 @@ import java.util.stream.IntStream;
  * Created by leonardo on 4/19/18.
  */
 public class ClientAsync {
+
+  private static final Logger logger = LoggerFactory.getLogger(ClientAsync.class);
 
   private final String host;
   private final Integer port;
@@ -53,10 +58,10 @@ public class ClientAsync {
         }
 
       } catch (UnknownHostException ex) {
-        log("Server not found: " + ex.getMessage());
+        logger.info("Server not found: {}", ex.getMessage());
 
       } catch (IOException ex) {
-        log("I/O error: " + ex.getMessage());
+        logger.info("I/O error: {}", ex.getMessage());
 
       } finally {
         final long endOfExecution = System.currentTimeMillis();
@@ -68,20 +73,18 @@ public class ClientAsync {
     });
   }
 
-  public static void log(final String msg) {
-    System.out.println("[" + System.currentTimeMillis() + "] " + Thread.currentThread().getName() + " - " + msg);
-  }
-
   public static void main(final String[] args) throws InterruptedException {
     final Integer clients = 50;
     final ExecutorService executorService = Executors.newFixedThreadPool(clients);
     final CountDownLatch counter = new CountDownLatch(clients);
 
+    final AtomicInteger id = new AtomicInteger(0);
+
     IntStream.range(0, clients)
         .forEach(client -> {
           new ClientAsync("localhost", 8080, executorService).getUsers(response -> {
             counter.countDown();
-            log("(" + response.getExecutionTime() + " ms) " + counter.getCount());
+            logger.info("[{}] ({} ms)", id.incrementAndGet(), response.getExecutionTime());
 
           });
         });

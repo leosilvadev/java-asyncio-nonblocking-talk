@@ -3,6 +3,8 @@ package com.github.leosilvadev.nonblockingjava.async;
 import com.github.leosilvadev.nonblockingjava.async.services.UserServiceAsync;
 import com.github.leosilvadev.nonblockingjava.utils.IOUtil;
 import com.github.leosilvadev.nonblockingjava.utils.Json;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -15,6 +17,8 @@ import java.util.concurrent.Executors;
  */
 public class ServerAsync {
 
+  private static final Logger logger = LoggerFactory.getLogger(ServerAsync.class);
+
   private final Integer threads;
   private final UserServiceAsync userService;
 
@@ -26,7 +30,7 @@ public class ServerAsync {
   public void start(final Integer port) throws IOException {
     final ServerSocket server = new ServerSocket(port);
     final ExecutorService executorService = Executors.newFixedThreadPool(threads);
-    log("Server listening at port " + port + ", using a pool with " + threads + " threads");
+    logger.info("Server listening at port {}, using a pool with {} threads", port, threads);
 
     executorService.execute(() -> {
       while (true) {
@@ -49,10 +53,6 @@ public class ServerAsync {
         IOUtil.write(socket, IOUtil.END_MSG);
       });
     };
-  }
-
-  public static void log(final String msg) {
-    System.out.println("[" + System.currentTimeMillis() + "] " + Thread.currentThread().getName() + " - " + msg);
   }
 
   public static void main(final String[] args) throws IOException {

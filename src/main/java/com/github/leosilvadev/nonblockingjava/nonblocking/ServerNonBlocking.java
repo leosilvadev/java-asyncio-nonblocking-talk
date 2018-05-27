@@ -3,6 +3,8 @@ package com.github.leosilvadev.nonblockingjava.nonblocking;
 import com.github.leosilvadev.nonblockingjava.nonblocking.services.UserServiceNonBlocking;
 import com.github.leosilvadev.nonblockingjava.utils.IOUtil;
 import com.github.leosilvadev.nonblockingjava.utils.Json;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -18,6 +20,8 @@ import java.util.Set;
  */
 public class ServerNonBlocking {
 
+  private static final Logger logger = LoggerFactory.getLogger(ServerNonBlocking.class);
+  
   private final UserServiceNonBlocking userService;
 
   public ServerNonBlocking() {
@@ -30,7 +34,7 @@ public class ServerNonBlocking {
     serverSocket.bind(new InetSocketAddress(port));
     serverSocket.configureBlocking(false);
     serverSocket.register(selector, SelectionKey.OP_ACCEPT);
-    log("Server listening at port " + port);
+    logger.info("Server listening at port {}", port);
 
     while (true) {
       selector.select();
@@ -69,11 +73,7 @@ public class ServerNonBlocking {
     final Long finishedAt = System.currentTimeMillis();
     final Long executionTime = finishedAt - beganAt;
 
-    log("Writting users... executed and sent in " + executionTime + " ms");
-  }
-
-  public static void log(final String msg) {
-    System.out.println("[" + System.currentTimeMillis() + "] " + Thread.currentThread().getName() + " - " + msg);
+    logger.info("Writting users... executed and sent in {} ms", executionTime);
   }
 
   public static void main(final String[] args) throws IOException {
