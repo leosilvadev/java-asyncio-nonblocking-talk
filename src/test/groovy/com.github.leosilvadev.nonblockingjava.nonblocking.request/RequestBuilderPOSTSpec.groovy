@@ -6,7 +6,7 @@ import spock.lang.Specification
 /**
  * Created by leonardo on 5/31/18.
  */
-class RequestBuilderSpec extends Specification {
+class RequestBuilderPOSTSpec extends Specification {
 
   def 'Should build a POST request with headers and body'() {
     given:
@@ -16,6 +16,7 @@ class RequestBuilderSpec extends Specification {
     String[] lines = [
       'POST /v1/users HTTP/1.1',
       'Content-Type: application/json',
+      'Accept: application/json',
       '',
       '{"name":"Jao"}'
     ]
@@ -26,8 +27,9 @@ class RequestBuilderSpec extends Specification {
     then:
     request.method == HttpMethod.POST
     request.path == '/v1/users'
-    request.headers.size() == 1
-    request.headers.get('Content-Type').get().value == 'application/json'
+    request.headers.size() == 2
+    request.headers.get('content-type').get().value == 'application/json'
+    request.headers.get('accept').get().value == 'application/json'
     request.body == '{"name":"Jao"}'
   }
 
@@ -48,7 +50,7 @@ class RequestBuilderSpec extends Specification {
     request.method == HttpMethod.POST
     request.path == '/v1/users'
     request.headers.size() == 1
-    request.headers.get('Content-Type').get().value == 'application/json'
+    request.headers.get('content-type').get().value == 'application/json'
     request.body == ''
   }
 
