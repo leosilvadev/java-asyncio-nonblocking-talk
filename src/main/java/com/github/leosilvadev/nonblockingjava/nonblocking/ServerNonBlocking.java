@@ -1,19 +1,22 @@
 package com.github.leosilvadev.nonblockingjava.nonblocking;
 
+import com.github.leosilvadev.nonblockingjava.nonblocking.request.Request;
+import com.github.leosilvadev.nonblockingjava.nonblocking.request.RequestBufferReader;
+import com.github.leosilvadev.nonblockingjava.nonblocking.request.RequestBuilder;
+import com.github.leosilvadev.nonblockingjava.nonblocking.request.RequestDefinition;
 import com.github.leosilvadev.nonblockingjava.nonblocking.services.UserServiceNonBlocking;
 import com.github.leosilvadev.nonblockingjava.utils.IOUtil;
-import com.github.leosilvadev.nonblockingjava.utils.Json;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by leonardo on 5/26/18.
@@ -21,7 +24,7 @@ import java.util.Set;
 public class ServerNonBlocking {
 
   private static final Logger logger = LoggerFactory.getLogger(ServerNonBlocking.class);
-  
+
   private final UserServiceNonBlocking userService;
 
   public ServerNonBlocking() {
@@ -61,7 +64,7 @@ public class ServerNonBlocking {
           final ServerSocketChannel serverSocketChannel = (ServerSocketChannel) key.channel();
           final SocketChannel client = serverSocketChannel.accept();
           client.configureBlocking(false);
-          client.register(selector, SelectionKey.OP_WRITE).attach(System.currentTimeMillis());
+          client.register(selector, SelectionKey.OP_WRITE).attach(new Context());
 
           // If the channel is writable (only Socket Channel was registered for WRITE operation)
           // then we get the users and write then through the socket
@@ -73,6 +76,14 @@ public class ServerNonBlocking {
         keyIterator.remove();
       }
     }
+  }
+
+  private static String readData(final SocketChannel channel) throws IOException {
+    final String[] lines = new RequestBufferReader().read(channel);
+
+    final Request request = new RequestBuilder().build(lines);
+
+    return "";
   }
 
   private void handleGetUsers(final SelectionKey key) {
