@@ -43,4 +43,9 @@ public class Header {
 
     return Optional.empty();
   }
+
+  @Override
+  public String toString() {
+    return String.format("%s: %s", name, value);
+  }
 }

@@ -24,7 +24,7 @@ public class RequestBufferReader {
       final ByteBuffer buffer = ByteBuffer.allocate(256);
       final int bytesRead = channel.read(buffer);
 
-      if (bytesRead == -1) {
+      if (bytesRead <= 0) {
         break;
       }
 
