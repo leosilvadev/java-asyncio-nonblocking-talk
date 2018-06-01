@@ -1,9 +1,11 @@
 package com.github.leosilvadev.nonblockingjava.nonblocking.request;
 
+import com.github.leosilvadev.nonblockingjava.nonblocking.Ensure;
 import com.github.leosilvadev.nonblockingjava.nonblocking.Header;
 import com.github.leosilvadev.nonblockingjava.nonblocking.Headers;
 import com.github.leosilvadev.nonblockingjava.nonblocking.InvalidHTTPDefinition;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -24,8 +26,10 @@ public class RequestBuilder {
     return new Request(definition, body, headers);
   }
 
-  public Request build(final String[] lines) {
-    final String firstLine = lines[0];
+  public Request build(final List<String> lines) {
+    Ensure.isNotEmpty(lines);
+
+    final String firstLine = lines.get(0);
     this.definition = RequestDefinition.from(firstLine).orElseThrow(InvalidHTTPDefinition::new);
 
     boolean readingHeaders = true;

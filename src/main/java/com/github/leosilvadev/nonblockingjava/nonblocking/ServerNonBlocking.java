@@ -79,7 +79,7 @@ public class ServerNonBlocking {
   }
 
   private static String readData(final SocketChannel channel) throws IOException {
-    final String[] lines = new RequestBufferReader().read(channel);
+    final List<String> lines = new RequestBufferReader().read(channel);
 
     final Request request = new RequestBuilder().build(lines);
 
