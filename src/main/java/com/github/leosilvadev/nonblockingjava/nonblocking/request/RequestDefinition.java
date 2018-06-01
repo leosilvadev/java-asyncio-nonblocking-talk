@@ -49,6 +49,10 @@ public final class RequestDefinition {
     return version;
   }
 
+  public boolean isGet() {
+    return HttpMethod.GET.equals(this.method);
+  }
+
   public static Optional<RequestDefinition> from(final String line) {
     final Matcher matcher = METHODS_PATTERN.matcher(line);
     if (matcher.matches()) {

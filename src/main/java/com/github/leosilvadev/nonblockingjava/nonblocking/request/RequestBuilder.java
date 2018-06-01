@@ -43,6 +43,9 @@ public class RequestBuilder {
         final Optional<Header> maybeHeader = Header.from(line);
         maybeHeader.ifPresent(header -> this.headers.add(header));
 
+      } else if (this.definition.isGet()) {
+        break;
+
       } else {
         this.body = line;
         break;
