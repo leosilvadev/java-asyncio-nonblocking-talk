@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * Created by leonardo on 6/1/18.
  */
-public final class ServerConfig {
+final class ServerConfig {
 
   private String host;
   private Integer port;
@@ -31,6 +31,26 @@ public final class ServerConfig {
   public ServerConfig withPort(final int port) {
     this.port = port;
     return this;
+  }
+
+  public ServerConfig handleGet(final String path, final Handler handler) {
+    return handle(HTTPMethod.GET, path, handler);
+  }
+
+  public ServerConfig handlePost(final String path, final Handler handler) {
+    return handle(HTTPMethod.POST, path, handler);
+  }
+
+  public ServerConfig handlePut(final String path, final Handler handler) {
+    return handle(HTTPMethod.PUT, path, handler);
+  }
+
+  public ServerConfig handleDelete(final String path, final Handler handler) {
+    return handle(HTTPMethod.DELETE, path, handler);
+  }
+
+  public ServerConfig handlePatch(final String path, final Handler handler) {
+    return handle(HTTPMethod.PATCH, path, handler);
   }
 
   public ServerConfig handle(final HTTPMethod method, final String path, final Handler handler) {

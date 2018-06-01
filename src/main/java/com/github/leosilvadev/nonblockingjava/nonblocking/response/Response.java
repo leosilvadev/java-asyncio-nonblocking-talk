@@ -30,6 +30,22 @@ public final class Response {
     return body;
   }
 
+  public static ResponseBuilder builder() {
+    return new ResponseBuilder();
+  }
+
+  public static ResponseBuilder ok() {
+    return new ResponseBuilder().withStatus(HTTPStatus.OK);
+  }
+
+  public static ResponseBuilder created() {
+    return new ResponseBuilder().withStatus(HTTPStatus.CREATED);
+  }
+
+  public static ResponseBuilder accepted() {
+    return new ResponseBuilder().withStatus(HTTPStatus.ACCEPTED);
+  }
+
   @Override
   public String toString() {
     final StringBuilder builder = new StringBuilder();

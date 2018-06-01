@@ -2,14 +2,13 @@ package com.github.leosilvadev.nonblockingjava.nonblocking.server;
 
 import com.github.leosilvadev.nonblockingjava.nonblocking.Context;
 import com.github.leosilvadev.nonblockingjava.nonblocking.handlers.HandlerRegistration;
-import com.github.leosilvadev.nonblockingjava.nonblocking.http.HTTPMethod;
 import com.github.leosilvadev.nonblockingjava.nonblocking.http.HTTPStatus;
+import com.github.leosilvadev.nonblockingjava.nonblocking.http.MIMEType;
 import com.github.leosilvadev.nonblockingjava.nonblocking.request.Request;
 import com.github.leosilvadev.nonblockingjava.nonblocking.request.RequestBufferReader;
 import com.github.leosilvadev.nonblockingjava.nonblocking.request.RequestBuilder;
+import com.github.leosilvadev.nonblockingjava.nonblocking.response.Responder;
 import com.github.leosilvadev.nonblockingjava.nonblocking.response.Response;
-import com.github.leosilvadev.nonblockingjava.nonblocking.response.ResponseBuilder;
-import com.github.leosilvadev.nonblockingjava.utils.IOUtil;
 import io.reactivex.Single;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,12 +19,15 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
-import java.util.*;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 /**
  * Created by leonardo on 5/26/18.
  */
-public class Server {
+public final class Server {
 
   private static final Logger logger = LoggerFactory.getLogger(Server.class);
 
@@ -77,22 +79,23 @@ public class Server {
           if (maybeHandler.isPresent()) {
             maybeHandler.get().getHandler().handle(request)
                 .subscribe(response -> {
-                  IOUtil.write(channel, response.toString());
+                  new Responder(response).respond(channel);
 
                 }, ex -> {
-                  final Response response = new ResponseBuilder()
+                  final Response response = Response.builder()
                       .withStatus(HTTPStatus.INTERNAL_SERVER_ERROR)
-                      .withBody(ex.getMessage())
+                      .withBody(ex.getMessage(), MIMEType.TEXT_PLAIN)
                       .build();
-                  IOUtil.write(channel, response.toString());
+
+                  new Responder(response).respond(channel);
 
                 });
 
           } else {
-            final Response response = new ResponseBuilder()
+            final Response response = Response.builder()
                 .withStatus(HTTPStatus.NOT_FOUND)
                 .build();
-            IOUtil.write(channel, response.toString());
+            new Responder(response).respond(channel);
           }
 
           key.cancel();
@@ -110,9 +113,9 @@ public class Server {
   public static void main(final String[] args) throws IOException {
     Server.config()
         .withPort(8080)
-        .handle(HTTPMethod.GET, "/v1/users", request -> {
-          return Single.just(new ResponseBuilder().withStatus(HTTPStatus.OK).withBody("{\"name\":\"JAO\"}").build());
-        })
+        .handleGet("/v1/users", request ->
+          Single.just(Response.ok().json("{\"name\":\"JAO\"}").build())
+        )
         .build()
         .start();
   }
