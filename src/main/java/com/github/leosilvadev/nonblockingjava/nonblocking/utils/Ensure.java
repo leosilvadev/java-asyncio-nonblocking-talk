@@ -1,4 +1,4 @@
-package com.github.leosilvadev.nonblockingjava.nonblocking;
+package com.github.leosilvadev.nonblockingjava.nonblocking.utils;
 
 import java.util.Collection;
 

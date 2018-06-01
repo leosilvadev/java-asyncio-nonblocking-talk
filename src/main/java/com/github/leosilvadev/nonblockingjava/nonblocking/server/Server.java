@@ -1,17 +1,15 @@
-package com.github.leosilvadev.nonblockingjava.nonblocking;
+package com.github.leosilvadev.nonblockingjava.nonblocking.server;
 
+import com.github.leosilvadev.nonblockingjava.nonblocking.Context;
 import com.github.leosilvadev.nonblockingjava.nonblocking.request.Request;
 import com.github.leosilvadev.nonblockingjava.nonblocking.request.RequestBufferReader;
 import com.github.leosilvadev.nonblockingjava.nonblocking.request.RequestBuilder;
-import com.github.leosilvadev.nonblockingjava.nonblocking.request.RequestDefinition;
-import com.github.leosilvadev.nonblockingjava.nonblocking.services.UserServiceNonBlocking;
 import com.github.leosilvadev.nonblockingjava.utils.IOUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
@@ -21,15 +19,9 @@ import java.util.*;
 /**
  * Created by leonardo on 5/26/18.
  */
-public class ServerNonBlocking {
+public class Server {
 
-  private static final Logger logger = LoggerFactory.getLogger(ServerNonBlocking.class);
-
-  private final UserServiceNonBlocking userService;
-
-  public ServerNonBlocking() {
-    this.userService = new UserServiceNonBlocking();
-  }
+  private static final Logger logger = LoggerFactory.getLogger(Server.class);
 
   public void start(final int port) throws IOException {
 
@@ -69,7 +61,6 @@ public class ServerNonBlocking {
           // If the channel is writable (only Socket Channel was registered for WRITE operation)
           // then we get the users and write then through the socket
         } else if (key.isWritable()) {
-          handleGetUsers(key);
           key.cancel();
 
         }
@@ -86,10 +77,6 @@ public class ServerNonBlocking {
     return "";
   }
 
-  private void handleGetUsers(final SelectionKey key) {
-    userService.getUsersJson(users -> write(users, key));
-  }
-
   private void write(final String message, final SelectionKey key) {
     final SocketChannel client = (SocketChannel) key.channel();
     IOUtil.write(client, IOUtil.BEGIN_MSG);
@@ -104,7 +91,7 @@ public class ServerNonBlocking {
   }
 
   public static void main(final String[] args) throws IOException {
-    final ServerNonBlocking server = new ServerNonBlocking();
+    final Server server = new Server();
     server.start(8080);
   }
 }

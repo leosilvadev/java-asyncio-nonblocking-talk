@@ -1,6 +1,6 @@
 package com.github.leosilvadev.nonblockingjava.nonblocking.request;
 
-import com.github.leosilvadev.nonblockingjava.nonblocking.HttpMethod;
+import com.github.leosilvadev.nonblockingjava.nonblocking.http.HTTPMethod;
 
 import java.util.Arrays;
 import java.util.Optional;
@@ -16,14 +16,14 @@ public final class RequestDefinition {
   private static final Pattern METHODS_PATTERN;
 
   static {
-    final String pattern = Arrays.stream(HttpMethod.values())
-        .map(HttpMethod::toString)
+    final String pattern = Arrays.stream(HTTPMethod.values())
+        .map(HTTPMethod::toString)
         .collect(Collectors.joining("|"));
 
     METHODS_PATTERN = Pattern.compile("(" + pattern + ") (/.*) (HTTP/1\\.1)");
   }
 
-  private final HttpMethod method;
+  private final HTTPMethod method;
   private final String path;
 
   /*
@@ -31,13 +31,13 @@ public final class RequestDefinition {
   * */
   private final String version;
 
-  private RequestDefinition(final HttpMethod method, final String path, final String version) {
+  private RequestDefinition(final HTTPMethod method, final String path, final String version) {
     this.method = method;
     this.path = path;
     this.version = version;
   }
 
-  public HttpMethod getMethod() {
+  public HTTPMethod getMethod() {
     return method;
   }
 
@@ -50,13 +50,13 @@ public final class RequestDefinition {
   }
 
   public boolean isGet() {
-    return HttpMethod.GET.equals(this.method);
+    return HTTPMethod.GET.equals(this.method);
   }
 
   public static Optional<RequestDefinition> from(final String line) {
     final Matcher matcher = METHODS_PATTERN.matcher(line);
     if (matcher.matches()) {
-      final Optional<HttpMethod> maybeMethod = HttpMethod.from(matcher.group(1));
+      final Optional<HTTPMethod> maybeMethod = HTTPMethod.from(matcher.group(1));
       if (maybeMethod.isPresent()) {
         return Optional.of(new RequestDefinition(maybeMethod.get(), matcher.group(2), matcher.group(3)));
 

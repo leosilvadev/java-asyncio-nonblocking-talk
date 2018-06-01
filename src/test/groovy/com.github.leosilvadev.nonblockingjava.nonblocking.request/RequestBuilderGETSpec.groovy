@@ -1,6 +1,6 @@
 package com.github.leosilvadev.nonblockingjava.nonblocking.request
 
-import com.github.leosilvadev.nonblockingjava.nonblocking.HttpMethod
+import com.github.leosilvadev.nonblockingjava.nonblocking.http.HTTPMethod
 import spock.lang.Specification
 
 /**
@@ -25,7 +25,7 @@ class RequestBuilderGETSpec extends Specification {
     def request = builder.build(lines)
 
     then:
-    request.method == HttpMethod.GET
+    request.method == HTTPMethod.GET
     request.path == '/v1/users'
     request.headers.size() == 2
     request.headers.get('content-type').get().value == 'application/json'
@@ -47,7 +47,7 @@ class RequestBuilderGETSpec extends Specification {
     def request = builder.build(lines)
 
     then:
-    request.method == HttpMethod.GET
+    request.method == HTTPMethod.GET
     request.path == '/v1/users'
     request.headers.size() == 1
     request.headers.get('content-type').get().value == 'application/json'
@@ -67,7 +67,7 @@ class RequestBuilderGETSpec extends Specification {
     def request = builder.build(lines)
 
     then:
-    request.method == HttpMethod.GET
+    request.method == HTTPMethod.GET
     request.path == '/v1/users'
     request.headers.size() == 0
     request.body == ''

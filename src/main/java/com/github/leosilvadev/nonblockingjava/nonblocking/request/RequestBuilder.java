@@ -1,9 +1,9 @@
 package com.github.leosilvadev.nonblockingjava.nonblocking.request;
 
-import com.github.leosilvadev.nonblockingjava.nonblocking.Ensure;
-import com.github.leosilvadev.nonblockingjava.nonblocking.Header;
-import com.github.leosilvadev.nonblockingjava.nonblocking.Headers;
-import com.github.leosilvadev.nonblockingjava.nonblocking.InvalidHTTPDefinition;
+import com.github.leosilvadev.nonblockingjava.nonblocking.utils.Ensure;
+import com.github.leosilvadev.nonblockingjava.nonblocking.http.Header;
+import com.github.leosilvadev.nonblockingjava.nonblocking.http.Headers;
+import com.github.leosilvadev.nonblockingjava.nonblocking.exceptions.InvalidHTTPDefinitionException;
 
 import java.util.List;
 import java.util.Optional;
@@ -30,7 +30,7 @@ public class RequestBuilder {
     Ensure.isNotEmpty(lines);
 
     final String firstLine = lines.get(0);
-    this.definition = RequestDefinition.from(firstLine).orElseThrow(InvalidHTTPDefinition::new);
+    this.definition = RequestDefinition.from(firstLine).orElseThrow(InvalidHTTPDefinitionException::new);
 
     boolean readingHeaders = true;
     for (final String line : lines) {

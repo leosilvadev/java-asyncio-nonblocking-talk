@@ -1,7 +1,7 @@
 package com.github.leosilvadev.nonblockingjava.nonblocking.request;
 
-import com.github.leosilvadev.nonblockingjava.nonblocking.Headers;
-import com.github.leosilvadev.nonblockingjava.nonblocking.HttpMethod;
+import com.github.leosilvadev.nonblockingjava.nonblocking.http.Headers;
+import com.github.leosilvadev.nonblockingjava.nonblocking.http.HTTPMethod;
 
 import java.util.Optional;
 
@@ -23,7 +23,7 @@ public class Request {
     this.headers = headers;
   }
 
-  public HttpMethod getMethod() {
+  public HTTPMethod getMethod() {
     return definition.getMethod();
   }
 

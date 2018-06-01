@@ -1,4 +1,6 @@
-package com.github.leosilvadev.nonblockingjava.nonblocking;
+package com.github.leosilvadev.nonblockingjava.nonblocking.http;
+
+import com.github.leosilvadev.nonblockingjava.nonblocking.utils.Ensure;
 
 import java.util.HashSet;
 import java.util.Optional;

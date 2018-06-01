@@ -1,6 +1,6 @@
 package com.github.leosilvadev.nonblockingjava.nonblocking.request
 
-import com.github.leosilvadev.nonblockingjava.nonblocking.HttpMethod
+import com.github.leosilvadev.nonblockingjava.nonblocking.http.HTTPMethod
 import spock.lang.Specification
 
 /**
@@ -21,7 +21,7 @@ class RequestDefinitionSpec extends Specification {
     then:
     definition.version == 'HTTP/1.1'
     definition.path == '/v1/users'
-    definition.method == HttpMethod.GET
+    definition.method == HTTPMethod.GET
   }
 
   def 'Should NOT build a request definition on missing method'() {

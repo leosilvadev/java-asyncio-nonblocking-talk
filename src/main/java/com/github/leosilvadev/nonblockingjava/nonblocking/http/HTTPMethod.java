@@ -1,11 +1,11 @@
-package com.github.leosilvadev.nonblockingjava.nonblocking;
+package com.github.leosilvadev.nonblockingjava.nonblocking.http;
 
 import java.util.Optional;
 
 /**
  * Created by leonardo on 5/31/18.
  */
-public enum HttpMethod {
+public enum HTTPMethod {
   GET,
   POST,
   PUT,
@@ -17,9 +17,9 @@ public enum HttpMethod {
   TRACE;
 
 
-  public static Optional<HttpMethod> from(final String method) {
+  public static Optional<HTTPMethod> from(final String method) {
     try {
-      return Optional.of(HttpMethod.valueOf(method));
+      return Optional.of(HTTPMethod.valueOf(method));
 
     } catch (final IllegalArgumentException ex) {
       return Optional.empty();
