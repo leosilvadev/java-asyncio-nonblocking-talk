@@ -1,12 +1,18 @@
 package com.github.leosilvadev.core;
 
+import com.github.leosilvadev.core.blocking.Blocking;
+import com.github.leosilvadev.core.config.exceptions.MissingConfigurationException;
 import com.github.leosilvadev.core.consumers.DeadEventConsumer;
 import com.google.common.eventbus.AsyncEventBus;
 import com.google.common.eventbus.EventBus;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+import com.google.inject.Module;
 import io.reactivex.internal.schedulers.RxThreadFactory;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.*;
 import java.util.concurrent.Executors;
 
 /**
@@ -14,11 +20,12 @@ import java.util.concurrent.Executors;
  */
 public class Core {
 
+  private final Injector injector;
   private final EventBus eventBus;
   private final Set<Object> consumers;
 
-  public Core() {
-
+  protected Core(final URI configPath, final Iterable<Module> modules) {
+    this.injector = Guice.createInjector(modules);
     this.eventBus = new AsyncEventBus(
         "core-eventbus",
         Executors.newSingleThreadExecutor(new RxThreadFactory("core"))
@@ -26,6 +33,14 @@ public class Core {
     this.consumers = new HashSet<>();
 
     this.registerConsumer(new DeadEventConsumer());
+  }
+
+  public <T> T getInstance(final Class<T> clazz) {
+    return injector.getInstance(clazz);
+  }
+
+  public Blocking blockingExecutor() {
+    return injector.getInstance(Blocking.class);
   }
 
   public Core publish(final Object event) {
@@ -47,5 +62,19 @@ public class Core {
   public Core unregisterAllConsumers() {
     this.consumers.forEach(this.eventBus::unregister);
     return this;
+  }
+
+  public static Core create(final String configPath, final Module... modules) {
+    try {
+      final URI uri = ClassLoader.getSystemResource(configPath).toURI();
+      final List<Module> coreModules = new ArrayList<>();
+      coreModules.add(new CoreModule(uri));
+      coreModules.addAll(Arrays.asList(modules));
+      return new Core(uri, coreModules);
+
+    } catch (final URISyntaxException e) {
+      throw new MissingConfigurationException(configPath);
+
+    }
   }
 }

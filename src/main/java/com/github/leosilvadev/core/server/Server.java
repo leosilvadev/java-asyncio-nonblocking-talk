@@ -1,7 +1,6 @@
 package com.github.leosilvadev.core.server;
 
 import com.github.leosilvadev.core.Core;
-import com.github.leosilvadev.core.blocking.Blocking;
 import com.github.leosilvadev.core.config.Configuration;
 import com.github.leosilvadev.core.handlers.HandlerRegistration;
 import com.github.leosilvadev.core.http.HTTPStatus;
@@ -116,18 +115,16 @@ public final class Server {
     }
   }
 
-  public static ServerConfigurer config(final Core core, final Configuration configuration) {
-    return new ServerConfigurer(core, configuration);
+  public static ServerConfigurer config(final Core core) {
+    return new ServerConfigurer(core, core.getInstance(Configuration.class));
   }
 
   public static void main(final String[] args) throws IOException {
-    final Core core = new Core();
-    final Configuration configuration = Configuration.load("application.yml");
-    final Blocking blocking = new Blocking(configuration);
+    final Core core = Core.create("application.yml");
 
-    Server.config(core, configuration)
+    Server.config(core)
         .handleGet("/v1/users", request ->
-          blocking.execute(() -> {
+          core.blockingExecutor().execute(() -> {
             try {
               Thread.sleep(2000);
               return "{\"name\":\"JAO\"}";

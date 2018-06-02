@@ -14,7 +14,10 @@ dependencies {
   compile group: 'io.netty', name: 'netty-all', version: '4.1.24.Final'
   compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.3'
   compile group: 'io.reactivex.rxjava2', name: 'rxjava', version: '2.1.14'
+
   compile group: 'com.google.guava', name: 'guava', version: '25.1-jre'
+  compile group: 'com.google.inject', name: 'guice', version: '4.2.0'
+
   compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.5'
   compile group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-yaml', version: '2.9.5'
 

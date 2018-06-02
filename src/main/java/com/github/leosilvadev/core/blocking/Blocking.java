@@ -1,6 +1,7 @@
 package com.github.leosilvadev.core.blocking;
 
 import com.github.leosilvadev.core.config.Configuration;
+import com.google.inject.Inject;
 import io.reactivex.Single;
 import io.reactivex.internal.schedulers.RxThreadFactory;
 
@@ -15,6 +16,7 @@ public class Blocking {
 
   private final ExecutorService executor;
 
+  @Inject
   public Blocking(final Configuration configuration) {
     final int blockingThreads = configuration.getBlocking().getThreads();
     final RxThreadFactory rxThreadFactory = new RxThreadFactory("blocking");
