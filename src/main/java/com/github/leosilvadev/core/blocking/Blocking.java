@@ -1,5 +1,6 @@
 package com.github.leosilvadev.core.blocking;
 
+import com.github.leosilvadev.core.config.Configuration;
 import io.reactivex.Single;
 import io.reactivex.internal.schedulers.RxThreadFactory;
 
@@ -12,14 +13,17 @@ import java.util.function.Supplier;
  */
 public class Blocking {
 
-  private static final ExecutorService executor;
+  private final ExecutorService executor;
 
-  static {
-    //TODO: READ FROM A GIVEN CONFIG
-    executor = Executors.newCachedThreadPool(new RxThreadFactory("blocking"));
+  public Blocking(final Configuration configuration) {
+    final int blockingThreads = configuration.getBlocking().getThreads();
+    final RxThreadFactory rxThreadFactory = new RxThreadFactory("blocking");
+    executor = blockingThreads == 0 ?
+        Executors.newCachedThreadPool(rxThreadFactory) :
+        Executors.newFixedThreadPool(blockingThreads, rxThreadFactory);
   }
 
-  public static <T> Single<T> execute(final Supplier<T> function) {
+  public <T> Single<T> execute(final Supplier<T> function) {
     return Single.create(emitter ->
         executor.execute(() -> {
           try {

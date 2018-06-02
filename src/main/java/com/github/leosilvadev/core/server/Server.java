@@ -2,6 +2,7 @@ package com.github.leosilvadev.core.server;
 
 import com.github.leosilvadev.core.Core;
 import com.github.leosilvadev.core.blocking.Blocking;
+import com.github.leosilvadev.core.config.Configuration;
 import com.github.leosilvadev.core.handlers.HandlerRegistration;
 import com.github.leosilvadev.core.http.HTTPStatus;
 import com.github.leosilvadev.core.http.MIMEType;
@@ -10,7 +11,6 @@ import com.github.leosilvadev.core.request.RequestBufferReader;
 import com.github.leosilvadev.core.request.RequestBuilder;
 import com.github.leosilvadev.core.response.Responder;
 import com.github.leosilvadev.core.response.Response;
-import io.reactivex.Single;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,15 +34,13 @@ public final class Server {
 
   private final Core core;
 
-  private final String host;
-  private final int port;
+  private final Configuration configuration;
 
   private final List<HandlerRegistration> handlerRegistrations;
 
-  protected Server(final Core core, final String host, final int port, final List<HandlerRegistration> handlerRegistrations) {
+  protected Server(final Core core, final Configuration configuration, final List<HandlerRegistration> handlerRegistrations) {
+    this.configuration = configuration;
     this.core = core;
-    this.host = host;
-    this.port = port;
     this.handlerRegistrations = handlerRegistrations;
   }
 
@@ -50,10 +48,13 @@ public final class Server {
     try {
       final Selector selector = Selector.open();
       final ServerSocketChannel serverSocket = ServerSocketChannel.open();
-      serverSocket.bind(new InetSocketAddress(host, port));
+      serverSocket.bind(new InetSocketAddress(
+              configuration.getServer().getHost(),
+              configuration.getServer().getPort())
+      );
       serverSocket.configureBlocking(false);
       serverSocket.register(selector, SelectionKey.OP_ACCEPT);
-      logger.info("Server listening at port {}", port);
+      logger.info("Server listening at port {}", configuration.getServer().getPort());
 
       while (true) {
         selector.select();
@@ -115,17 +116,18 @@ public final class Server {
     }
   }
 
-  public static ServerConfig config(final Core core) {
-    return new ServerConfig(core);
+  public static ServerConfigurer config(final Core core, final Configuration configuration) {
+    return new ServerConfigurer(core, configuration);
   }
 
   public static void main(final String[] args) throws IOException {
     final Core core = new Core();
+    final Configuration configuration = Configuration.load("application.yml");
+    final Blocking blocking = new Blocking(configuration);
 
-    Server.config(core)
-        .withPort(8080)
+    Server.config(core, configuration)
         .handleGet("/v1/users", request ->
-          Blocking.execute(() -> {
+          blocking.execute(() -> {
             try {
               Thread.sleep(2000);
               return "{\"name\":\"JAO\"}";

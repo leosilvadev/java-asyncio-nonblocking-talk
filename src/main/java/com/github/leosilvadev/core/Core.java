@@ -7,7 +7,6 @@ import io.reactivex.internal.schedulers.RxThreadFactory;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
@@ -19,9 +18,11 @@ public class Core {
   private final Set<Object> consumers;
 
   public Core() {
-    final ExecutorService executor = Executors.newSingleThreadExecutor(new RxThreadFactory("core"));
 
-    this.eventBus = new AsyncEventBus("core-eventbus", executor);
+    this.eventBus = new AsyncEventBus(
+        "core-eventbus",
+        Executors.newSingleThreadExecutor(new RxThreadFactory("core"))
+    );
     this.consumers = new HashSet<>();
 
     this.registerConsumer(new DeadEventConsumer());
