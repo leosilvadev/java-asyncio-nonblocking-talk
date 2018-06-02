@@ -1,4 +1,4 @@
-package com.github.leosilvadev.core.nonblocking.request
+package com.github.leosilvadev.core.request
 
 import com.github.leosilvadev.core.request.RequestBufferReader
 import spock.lang.Specification
@@ -9,7 +9,7 @@ import java.nio.channels.SocketChannel
 /**
  * Created by leonardo on 5/31/18.
  */
-class RequestBufferReaderSpec extends Specification {
+class RequestBufferReaderUnitSpec extends Specification {
 
   def 'Should read a POST request with headers and body'() {
     def parts = [

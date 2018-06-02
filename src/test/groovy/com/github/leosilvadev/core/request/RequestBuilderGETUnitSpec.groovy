@@ -1,4 +1,4 @@
-package com.github.leosilvadev.core.nonblocking.request
+package com.github.leosilvadev.core.request
 
 import com.github.leosilvadev.core.http.HTTPMethod
 import com.github.leosilvadev.core.request.RequestBuilder
@@ -7,7 +7,7 @@ import spock.lang.Specification
 /**
  * Created by leonardo on 5/31/18.
  */
-class RequestBuilderGETSpec extends Specification {
+class RequestBuilderGETUnitSpec extends Specification {
 
   def 'Should build a GET request with headers and body, but ignore the body'() {
     given:

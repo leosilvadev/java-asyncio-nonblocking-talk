@@ -8,7 +8,7 @@ import spock.lang.Specification
 /**
  * Created by leonardo on 6/1/18.
  */
-class ResponseSpec extends Specification {
+class ResponseUnitSpec extends Specification {
 
   def 'Should build output when status is ok, has no header and no body'() {
     given:

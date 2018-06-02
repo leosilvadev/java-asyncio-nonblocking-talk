@@ -1,4 +1,4 @@
-package com.github.leosilvadev.core.nonblocking.request
+package com.github.leosilvadev.core.request
 
 import com.github.leosilvadev.core.http.HTTPMethod
 import com.github.leosilvadev.core.request.RequestDefinition
@@ -7,7 +7,7 @@ import spock.lang.Specification
 /**
  * Created by leonardo on 5/31/18.
  */
-class RequestDefinitionSpec extends Specification {
+class RequestDefinitionUnitSpec extends Specification {
 
   def 'Should build a request definition with a valid definition'() {
     when:

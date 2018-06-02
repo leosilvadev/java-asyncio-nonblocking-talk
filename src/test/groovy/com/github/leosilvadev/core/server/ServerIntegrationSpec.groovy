@@ -13,7 +13,6 @@ import static io.restassured.RestAssured.given
 import static io.restassured.RestAssured.when
 import static org.hamcrest.Matchers.equalTo
 
-
 /**
  * Created by leonardo on 6/2/18.
  */
