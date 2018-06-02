@@ -1,6 +1,7 @@
 package com.github.leosilvadev.core.server;
 
 import com.github.leosilvadev.core.Core;
+import com.github.leosilvadev.core.blocking.Blocking;
 import com.github.leosilvadev.core.handlers.HandlerRegistration;
 import com.github.leosilvadev.core.http.HTTPStatus;
 import com.github.leosilvadev.core.http.MIMEType;
@@ -124,7 +125,14 @@ public final class Server {
     Server.config(core)
         .withPort(8080)
         .handleGet("/v1/users", request ->
-            Single.just(Response.ok().json("{\"name\":\"JAO\"}").build())
+          Blocking.execute(() -> {
+            try {
+              Thread.sleep(2000);
+              return "{\"name\":\"JAO\"}";
+            } catch (InterruptedException e) {
+              throw new RuntimeException(e);
+            }
+          }).map(json -> Response.ok().json(json).build())
         )
         .build()
         .start();

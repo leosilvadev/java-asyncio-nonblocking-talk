@@ -3,7 +3,7 @@ package com.github.leosilvadev.core;
 import com.github.leosilvadev.core.consumers.DeadEventConsumer;
 import com.google.common.eventbus.AsyncEventBus;
 import com.google.common.eventbus.EventBus;
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import io.reactivex.internal.schedulers.RxThreadFactory;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -19,8 +19,7 @@ public class Core {
   private final Set<Object> consumers;
 
   public Core() {
-    final ExecutorService executor = Executors.newSingleThreadExecutor(
-        new ThreadFactoryBuilder().setNameFormat("core").build());
+    final ExecutorService executor = Executors.newSingleThreadExecutor(new RxThreadFactory("core"));
 
     this.eventBus = new AsyncEventBus("core-eventbus", executor);
     this.consumers = new HashSet<>();
