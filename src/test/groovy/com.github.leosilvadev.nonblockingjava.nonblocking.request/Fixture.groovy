@@ -1,4 +1,4 @@
-package com.github.leosilvadev.nonblockingjava.nonblocking.request
+package com.github.leosilvadev.core.nonblocking.request
 
 import java.nio.ByteBuffer
 import java.nio.charset.Charset

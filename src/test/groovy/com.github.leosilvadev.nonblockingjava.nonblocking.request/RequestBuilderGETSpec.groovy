@@ -1,6 +1,7 @@
-package com.github.leosilvadev.nonblockingjava.nonblocking.request
+package com.github.leosilvadev.core.nonblocking.request
 
-import com.github.leosilvadev.nonblockingjava.nonblocking.http.HTTPMethod
+import com.github.leosilvadev.core.http.HTTPMethod
+import com.github.leosilvadev.core.request.RequestBuilder
 import spock.lang.Specification
 
 /**

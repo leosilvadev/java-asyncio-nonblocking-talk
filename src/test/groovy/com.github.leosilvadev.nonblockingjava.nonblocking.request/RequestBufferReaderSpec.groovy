@@ -1,5 +1,6 @@
-package com.github.leosilvadev.nonblockingjava.nonblocking.request
+package com.github.leosilvadev.core.nonblocking.request
 
+import com.github.leosilvadev.core.request.RequestBufferReader
 import spock.lang.Specification
 
 import java.nio.ByteBuffer
