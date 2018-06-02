@@ -40,4 +40,8 @@ public class Blocking {
     );
   }
 
+  public void shutdown() {
+    this.executor.shutdown();
+  }
+
 }

@@ -17,7 +17,7 @@ public final class Responder {
 
   public void respond(final SocketChannel socket) {
     try {
-      socket.write(ByteBuffer.wrap((response.toString() + "\n").getBytes("UTF-8")));
+      socket.write(ByteBuffer.wrap((response.toString()).getBytes("UTF-8")));
       socket.close();
     } catch (IOException e) {
       e.printStackTrace();

@@ -51,7 +51,7 @@ final class ServerConfigurer {
   }
 
   public Server build() {
-    return new Server(core, configuration, handlerRegistrations);
+    return new Server(configuration, handlerRegistrations);
   }
 
 }

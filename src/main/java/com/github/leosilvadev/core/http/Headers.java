@@ -2,9 +2,9 @@ package com.github.leosilvadev.core.http;
 
 import com.github.leosilvadev.core.utils.Ensure;
 
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Stream;
 
 /**
@@ -12,10 +12,10 @@ import java.util.stream.Stream;
  */
 public class Headers {
 
-  private final Set<Header> headers;
+  private final List<Header> headers;
 
   public Headers() {
-    this.headers = new HashSet<>();
+    this.headers = new ArrayList<>();
   }
 
   public Optional<Header> get(final String name) {

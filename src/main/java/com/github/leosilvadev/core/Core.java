@@ -1,6 +1,7 @@
 package com.github.leosilvadev.core;
 
 import com.github.leosilvadev.core.blocking.Blocking;
+import com.github.leosilvadev.core.config.Configuration;
 import com.github.leosilvadev.core.config.exceptions.MissingConfigurationException;
 import com.github.leosilvadev.core.consumers.DeadEventConsumer;
 import com.google.common.eventbus.AsyncEventBus;
@@ -12,7 +13,9 @@ import io.reactivex.internal.schedulers.RxThreadFactory;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.Executors;
 
 /**
@@ -21,16 +24,18 @@ import java.util.concurrent.Executors;
 public class Core {
 
   private final Injector injector;
+  private final Blocking blocking;
   private final EventBus eventBus;
-  private final Set<Object> consumers;
+  private final List<Object> consumers;
 
-  protected Core(final URI configPath, final Iterable<Module> modules) {
+  protected Core(final Iterable<Module> modules) {
     this.injector = Guice.createInjector(modules);
+    this.blocking = injector.getInstance(Blocking.class);
     this.eventBus = new AsyncEventBus(
         "core-eventbus",
         Executors.newSingleThreadExecutor(new RxThreadFactory("core"))
     );
-    this.consumers = new HashSet<>();
+    this.consumers = new ArrayList<>();
 
     this.registerConsumer(new DeadEventConsumer());
   }
@@ -40,7 +45,7 @@ public class Core {
   }
 
   public Blocking blockingExecutor() {
-    return injector.getInstance(Blocking.class);
+    return this.blocking;
   }
 
   public Core publish(final Object event) {
@@ -64,17 +69,29 @@ public class Core {
     return this;
   }
 
+  public static Core create(final Configuration configuration, final Module... modules) {
+    final List<Module> coreModules = new ArrayList<>();
+    coreModules.add(new CoreModule(configuration));
+    coreModules.addAll(Arrays.asList(modules));
+    return new Core(coreModules);
+  }
+
   public static Core create(final String configPath, final Module... modules) {
     try {
       final URI uri = ClassLoader.getSystemResource(configPath).toURI();
       final List<Module> coreModules = new ArrayList<>();
       coreModules.add(new CoreModule(uri));
       coreModules.addAll(Arrays.asList(modules));
-      return new Core(uri, coreModules);
+      return new Core(coreModules);
 
     } catch (final URISyntaxException e) {
       throw new MissingConfigurationException(configPath);
 
     }
+  }
+
+  public void shutdown() {
+    this.unregisterAllConsumers();
+    this.blocking.shutdown();
   }
 }
