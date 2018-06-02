@@ -1,5 +1,6 @@
 package com.github.leosilvadev.nonblockingjava.nonblocking.server;
 
+import com.github.leosilvadev.nonblockingjava.nonblocking.Core;
 import com.github.leosilvadev.nonblockingjava.nonblocking.handlers.Handler;
 import com.github.leosilvadev.nonblockingjava.nonblocking.handlers.HandlerRegistration;
 import com.github.leosilvadev.nonblockingjava.nonblocking.http.HTTPMethod;
@@ -12,12 +13,14 @@ import java.util.List;
  */
 final class ServerConfig {
 
+  private final Core core;
   private String host;
   private Integer port;
 
   private List<HandlerRegistration> handlerRegistrations;
 
-  public ServerConfig() {
+  public ServerConfig(final Core core) {
+    this.core = core;
     this.host = "0.0.0.0";
     this.port = 8080;
     this.handlerRegistrations = new ArrayList<>();
@@ -59,7 +62,7 @@ final class ServerConfig {
   }
 
   public Server build() {
-    return new Server(host, port, handlerRegistrations);
+    return new Server(core, host, port, handlerRegistrations);
   }
 
 }
