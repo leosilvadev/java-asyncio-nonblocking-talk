@@ -71,14 +71,14 @@ public class Core {
     return this;
   }
 
-  public static Core create(final Configuration configuration, final Module... modules) {
+  public static Core config(final Configuration configuration, final Module... modules) {
     final List<Module> coreModules = new ArrayList<>();
     coreModules.add(new CoreModule(configuration));
     coreModules.addAll(Arrays.asList(modules));
     return new Core(coreModules);
   }
 
-  public static Core create(final String configPath, final Module... modules) {
+  public static Core config(final String configPath, final Module... modules) {
     try {
       final URI uri = ClassLoader.getSystemResource(configPath).toURI();
       final List<Module> coreModules = new ArrayList<>();

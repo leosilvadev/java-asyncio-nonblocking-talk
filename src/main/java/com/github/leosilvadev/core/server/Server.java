@@ -146,7 +146,7 @@ public final class Server {
   }
 
   public static void main(final String[] args) throws IOException {
-    final Core core = Core.create("application.yml");
+    final Core core = Core.config("application.yml");
 
     Server.config(core)
         .handleGet("/v1/users", request ->

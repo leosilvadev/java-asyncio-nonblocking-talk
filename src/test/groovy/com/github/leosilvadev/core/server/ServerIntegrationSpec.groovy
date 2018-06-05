@@ -28,7 +28,7 @@ class ServerIntegrationSpec extends Specification {
       blocking = new BlockingConfig(1)
       it
     }
-    core = Core.create(configuration)
+    core = Core.config(configuration)
     serverConfigurer = Server.config(core)
   }
 
