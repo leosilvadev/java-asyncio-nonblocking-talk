@@ -10,6 +10,7 @@ import com.github.leosilvadev.core.request.RequestBufferReader;
 import com.github.leosilvadev.core.request.RequestBuilder;
 import com.github.leosilvadev.core.response.Responder;
 import com.github.leosilvadev.core.response.Response;
+import com.github.leosilvadev.core.routers.Router;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import io.reactivex.Single;
 import org.slf4j.Logger;
@@ -148,17 +149,14 @@ public final class Server {
   public static void main(final String[] args) throws IOException {
     final Core core = Core.config("application.yml");
 
+    final Router usersRouter = Router.config()
+        .get("/v1/users", request -> Single.just(Response.ok().build()))
+        .post("/v1/users", request -> Single.just(Response.ok().build()))
+        .delete("/v1/users", request -> Single.just(Response.ok().build()))
+        .put("/v1/users", request -> Single.just(Response.ok().build()));
+
     Server.config(core)
-        .handleGet("/v1/users", request ->
-            core.executeBlocking(() -> {
-              try {
-                Thread.sleep(2000);
-                return "{\"name\":\"JAO\"}";
-              } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-              }
-            }).map(json -> Response.ok().json(json).build())
-        )
+        .route(usersRouter)
         .start()
         .subscribe();
   }

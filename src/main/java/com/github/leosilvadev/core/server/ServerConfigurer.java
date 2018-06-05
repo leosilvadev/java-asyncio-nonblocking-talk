@@ -5,6 +5,7 @@ import com.github.leosilvadev.core.config.Configuration;
 import com.github.leosilvadev.core.handlers.Handler;
 import com.github.leosilvadev.core.handlers.HandlerRegistration;
 import com.github.leosilvadev.core.http.HTTPMethod;
+import com.github.leosilvadev.core.routers.Router;
 import io.reactivex.Single;
 
 import java.util.ArrayList;
@@ -48,6 +49,11 @@ final class ServerConfigurer {
 
   public ServerConfigurer handle(final HTTPMethod method, final String path, final Handler handler) {
     this.handlerRegistrations.add(new HandlerRegistration(method, path, handler));
+    return this;
+  }
+
+  public ServerConfigurer route(final Router router) {
+    this.handlerRegistrations.addAll(router.getHandlerRegistrations());
     return this;
   }
 
