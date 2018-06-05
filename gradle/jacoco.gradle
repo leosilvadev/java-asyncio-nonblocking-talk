@@ -1,0 +1,47 @@
+apply plugin: 'jacoco'
+
+task jacocoUnitTestReport(type: JacocoReport) {
+  group = "reporting"
+  description = "Generate Jacoco coverage reports for unit tests."
+
+  sourceSets sourceSets.main
+  executionData test
+
+  reports {
+    xml.enabled false
+    csv.enabled false
+    html.destination file("${buildDir}/coverage/unit")
+  }
+}
+
+task jacocoIntegrationTestReport(type: JacocoReport) {
+  group = "reporting"
+  description = "Generate Jacoco coverage reports for integration tests."
+
+  sourceSets sourceSets.main
+  executionData integrationTest
+
+  reports {
+    xml.enabled false
+    csv.enabled false
+    html.destination file("${buildDir}/coverage/integration")
+  }
+}
+
+task jacocoAllTestReport(type: JacocoReport) {
+  group = "reporting"
+  description = "Generate Jacoco coverage reports for all tests."
+
+  sourceSets sourceSets.main
+  executionData allTest
+
+  reports {
+    xml.enabled false
+    csv.enabled false
+    html.destination file("${buildDir}/coverage/all")
+  }
+}
+
+test.finalizedBy jacocoUnitTestReport
+integrationTest.finalizedBy jacocoIntegrationTestReport
+allTest.finalizedBy jacocoAllTestReport

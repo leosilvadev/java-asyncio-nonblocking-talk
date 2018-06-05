@@ -1,0 +1,26 @@
+test {
+  group = 'test'
+  description = 'Run all unit tests (*UnitSpec)'
+  filter {
+    includeTestsMatching '*UnitSpec'
+  }
+  outputs.upToDateWhen { false }
+}
+
+task integrationTest(type: Test) {
+  group = 'test'
+  description = 'Run all integration tests (*IntegrationSpec)'
+  filter {
+    includeTestsMatching '*IntegrationSpec'
+  }
+  outputs.upToDateWhen { false }
+}
+
+task allTest(type: Test) {
+  group = 'test'
+  description = 'Run all tests (*Spec)'
+  filter {
+    includeTestsMatching '*Spec'
+  }
+  outputs.upToDateWhen { false }
+}
