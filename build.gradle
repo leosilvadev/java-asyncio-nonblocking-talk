@@ -3,6 +3,7 @@ version '1.0-SNAPSHOT'
 
 apply plugin: 'java'
 apply plugin: 'groovy'
+apply plugin: 'jacoco'
 
 sourceCompatibility = 1.8
 
@@ -27,7 +28,15 @@ dependencies {
   testCompile group: 'junit', name: 'junit', version: '4.12'
 }
 
+jacoco {
+  toolVersion = "0.7.5.201505241946"
+}
+
+
+
 test {
+  group = 'test'
+  description = 'Run all unit tests (*UnitSpec)'
   filter {
     includeTestsMatching '*UnitSpec'
   }
@@ -35,6 +44,8 @@ test {
 }
 
 task integrationTest(type: Test) {
+  group = 'test'
+  description = 'Run all integration tests (*IntegrationSpec)'
   filter {
     includeTestsMatching '*IntegrationSpec'
   }
@@ -42,5 +53,56 @@ task integrationTest(type: Test) {
 }
 
 task allTest(type: Test) {
+  group = 'test'
+  description = 'Run all tests (*Spec)'
+  filter {
+    includeTestsMatching '*Spec'
+  }
   outputs.upToDateWhen { false }
 }
+
+task jacocoUnitTestReport(type: JacocoReport) {
+  group = "reporting"
+  description = "Generate Jacoco coverage reports for unit tests."
+
+  sourceSets sourceSets.main
+  executionData test
+
+  reports {
+    xml.enabled false
+    csv.enabled false
+    html.destination file("${buildDir}/coverage/unit")
+  }
+}
+
+task jacocoIntegrationTestReport(type: JacocoReport) {
+  group = "reporting"
+  description = "Generate Jacoco coverage reports for integration tests."
+
+  sourceSets sourceSets.main
+  executionData integrationTest
+
+  reports {
+    xml.enabled false
+    csv.enabled false
+    html.destination file("${buildDir}/coverage/integration")
+  }
+}
+
+task jacocoAllTestReport(type: JacocoReport) {
+  group = "reporting"
+  description = "Generate Jacoco coverage reports for all tests."
+
+  sourceSets sourceSets.main
+  executionData allTest
+
+  reports {
+    xml.enabled false
+    csv.enabled false
+    html.destination file("${buildDir}/coverage/all")
+  }
+}
+
+test.finalizedBy jacocoUnitTestReport
+integrationTest.finalizedBy jacocoIntegrationTestReport
+allTest.finalizedBy jacocoAllTestReport
