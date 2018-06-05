@@ -150,7 +150,7 @@ public final class Server {
 
     Server.config(core)
         .handleGet("/v1/users", request ->
-            core.blockingExecutor().execute(() -> {
+            core.executeBlocking(() -> {
               try {
                 Thread.sleep(2000);
                 return "{\"name\":\"JAO\"}";
@@ -159,8 +159,8 @@ public final class Server {
               }
             }).map(json -> Response.ok().json(json).build())
         )
-        .build()
-        .start();
+        .start()
+        .subscribe();
   }
 
   public void shutdown() {

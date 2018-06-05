@@ -5,6 +5,7 @@ import com.github.leosilvadev.core.config.Configuration;
 import com.github.leosilvadev.core.handlers.Handler;
 import com.github.leosilvadev.core.handlers.HandlerRegistration;
 import com.github.leosilvadev.core.http.HTTPMethod;
+import io.reactivex.Single;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,8 +51,8 @@ final class ServerConfigurer {
     return this;
   }
 
-  public Server build() {
-    return new Server(configuration, handlerRegistrations);
+  public Single<Server> start() {
+    return new Server(configuration, handlerRegistrations).start();
   }
 
 }

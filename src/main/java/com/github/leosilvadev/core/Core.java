@@ -9,6 +9,7 @@ import com.google.common.eventbus.EventBus;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Module;
+import io.reactivex.Single;
 import io.reactivex.internal.schedulers.RxThreadFactory;
 
 import java.net.URI;
@@ -17,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Executors;
+import java.util.function.Supplier;
 
 /**
  * Created by leonardo on 6/2/18.
@@ -44,8 +46,8 @@ public class Core {
     return injector.getInstance(clazz);
   }
 
-  public Blocking blockingExecutor() {
-    return this.blocking;
+  public <T> Single<T> executeBlocking(final Supplier<T> function) {
+    return this.blocking.execute(function);
   }
 
   public Core publish(final Object event) {
