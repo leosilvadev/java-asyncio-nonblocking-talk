@@ -7,6 +7,7 @@ import com.github.leosilvadev.core.config.ServerConfig
 import com.github.leosilvadev.core.json.Json
 import com.github.leosilvadev.core.response.Response
 import io.reactivex.Single
+import io.reactivex.functions.Consumer
 import spock.lang.Specification
 
 import static io.restassured.RestAssured.given
@@ -38,11 +39,8 @@ class ServerIntegrationSpec extends Specification {
       Single.just([[name: 'JAO', age: 30], [name: 'MARIA', age: 31]]).map { Response.ok().json(it).build() }
     }
 
-    and:
-    runningServer = serverConfigurer.build()
-
     when:
-    runningServer.start().subscribe()
+    serverConfigurer.start().subscribe({ runningServer = it } as Consumer)
 
     and:
     def response = when().get('http://localhost:9000/v1/users')
@@ -61,11 +59,8 @@ class ServerIntegrationSpec extends Specification {
       Single.just(users).map { Response.ok().json(it).build() }
     }
 
-    and:
-    runningServer = serverConfigurer.build()
-
     when:
-    runningServer.start().subscribe()
+    serverConfigurer.start().subscribe({ runningServer = it } as Consumer)
 
     and:
     def response = given()
